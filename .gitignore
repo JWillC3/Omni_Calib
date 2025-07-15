@@ -1,0 +1,19 @@
+# R files to ignore
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+Omni_Calib.Rproj
+
+# Data files
+data_raw/
+data_clean/
+ref_data/
+
+# Other
+*.zip
+*.xlsx
+*.csv
+*.txt
+/graphics
+/HTML
