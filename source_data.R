@@ -16,12 +16,12 @@ library(viridis)
 library(DT)
 library(plotly)
 library(readxl)
-library(knitr)
 library(magick)
 library(corrr)
 library(googlesheets4)
-library(flextable)
 library(grid)
+library(knitr)
+
 
 #-----------
 #read omni data
