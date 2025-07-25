@@ -68,26 +68,7 @@ omni_master <- omni_master %>%
 #----
 #Trim master by Google Sheets times
 #Return only the rows from omni_master that fall within chamber step periods
-omni_data_trim <- function(omni_master, sheets_data) {
-  sheets_data <- sheets_data %>%
-    mutate(Start_DateTime_floor = floor_date(Start_DateTime,
-                                             unit = "5 minutes"),
-      End_DateTime_ceil = ceiling_date(End_DateTime, unit = "5 minutes"))
-  
-  #Join and filter for rows within chamber test step timeframes
-  omni_with_step <- omni_master %>%
-    left_join(sheets_data %>%
-        select(Device_ID, Chamber_Step, Start_DateTime_floor,
-               End_DateTime_ceil),
-      by = c("device_id" = "Device_ID")) %>%
-    filter(time >= Start_DateTime_floor & time <= End_DateTime_ceil) %>%
-    mutate(step = Chamber_Step) %>%
-    select(-Start_DateTime_floor, -End_DateTime_ceil, -Chamber_Step)
-  
-  return(omni_with_step)
-}
 
-omni_master_trimmed <- omni_data_trim(omni_master, sheets_data)
 #----
 
 
