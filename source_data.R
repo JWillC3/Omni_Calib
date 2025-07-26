@@ -37,16 +37,25 @@ sheets_data <- sheets_data %>%
                   orders = c("mdy HM", "mdy HMS", "mdy IMp", "mdy"),
                   tz = "America/Denver"))
 
+#----
 #Function to read and clean Omni files
+# Function to read and clean Omni files
 read_and_clean_omni <- function(file_path) {
-  #Extract device_id from filename
+  # Extract device_id from filename
   device_id <- str_extract(basename(file_path), "^[^_]+")
   
-  #Read device .csv
-  df <- read_csv(file_path, show_col_types = FALSE) %>%
-    select(-any_of(c("score", "pm10"))) %>%  #Remove unwanted columns
-    rename(time = `timestamp(America/Denver)`) %>%
-    mutate(device_id = device_id, .before = 1)  #Add device_id
+  # Read the file with timestamp column forced as character
+  df <- read_csv(file_path, show_col_types = FALSE, 
+                 col_types = cols(`timestamp(America/Denver)` = col_character())) %>%
+    select(-any_of(c("score", "pm10"))) %>%
+    mutate(
+      device_id = device_id,
+      time_raw = `timestamp(America/Denver)`,
+      time = parse_date_time(time_raw, orders = "mdy HM") %>%
+        force_tz("America/Denver")
+    ) %>%
+    select(-time_raw) %>%
+    relocate(device_id, time)
   
   return(df)
 }
@@ -61,9 +70,21 @@ omni_files <- list.files(path = omni_dir, pattern = "\\.csv$",
 #Apply the function to all Omni files and create new df
 omni_master <- map_dfr(omni_files, read_and_clean_omni)
 
-#Convert time zone
+#Convert time zone and rename column that got effed up by updating the function...
 omni_master <- omni_master %>%
-  mutate(time = with_tz(time, tzone = "America/Denver"))
+  mutate(time = with_tz(time, tzone = "America/Denver")) %>% 
+  select(-"time") %>% 
+  rename(time = "timestamp(America/Denver)")
+
+#Change back to proper date time format like is should already be...
+omni_master <- omni_master %>%
+  mutate(
+    time = parse_date_time(`time`, 
+                           orders = c("ymd HMS", "mdy HM", "mdy HMS")) %>% 
+      force_tz("America/Denver")
+  )
+
+
 
 #----
 #Trim master by Google Sheets times
