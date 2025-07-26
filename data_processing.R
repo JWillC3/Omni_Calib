@@ -2,6 +2,7 @@
 source("source_data.R")
 
 #----
+#Phase 1, match Omni date to batch number from Google Sheets
 # Step 1: Get device IDs from batch 1
 batch_1_ids <- sheets_data %>%
   filter(batch == "1") %>%
@@ -15,6 +16,7 @@ omni_batch_1 <- omni_master %>%
 
 
  #----
+ #Phase 2, trim the omni data to match time windows for chamber steps
  # Step 1: Get time windows for each chamber step
  step_windows <- sheets_data %>%
    filter(batch == "1") %>%
