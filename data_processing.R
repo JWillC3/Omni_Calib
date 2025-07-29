@@ -89,10 +89,6 @@ omni_batch_1 <- omni_master %>%
    bind_rows(step_data)
  }
 
-#Create each batch
-batch_1 <- trim_omni(omni_master, sheets_data, batch_number = 1) 
-batch_2 <- trim_omni(omni_master, sheets_data, batch_number = 2)
-
 #Combine all batches
 all_batches <- unique(sheets_data$batch)
 
@@ -100,5 +96,3 @@ omni_all_trimmed <- map_dfr(all_batches, function(batch_num) {
   trim_omni(omni_master, sheets_data, batch_number = batch_num) %>%
     mutate(batch = batch_num)
 })
-
-unique(omni_all_trimmed$batch)
