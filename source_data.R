@@ -38,38 +38,39 @@ sheets_data <- sheets_data %>%
                   tz = "America/Denver"))
 
 #----
+#Function to read in Omni files
 read_and_clean_omni <- function(file_path) {
-  # Extract device_id from filename
+  #Extract device_id from filename
   device_id <- str_extract(basename(file_path), "^[^_]+")
   
-  # Read CSV and force timestamp as character
+  #Read .csv and force timestamp as character
   df <- read_csv(file_path, show_col_types = FALSE, 
-                 col_types = cols(`timestamp(America/Denver)` = col_character())) %>%
+                 col_types = cols(
+                   `timestamp(America/Denver)` = col_character())
+                 ) %>%
     select(-any_of(c("score", "pm10"))) %>%
-    mutate(
-      device_id = device_id,
-      time_raw = `timestamp(America/Denver)`,
+    mutate(device_id = device_id,time_raw = `timestamp(America/Denver)`,
       
-      # Try multiple formats just in case they vary across devices
-      time = parse_date_time(
-        time_raw, 
-        orders = c("ymd HMS", "ymd HM", "mdy HMS", "mdy HM", "dmy HMS", "dmy HM"),
-        tz = "America/Denver"
-      )
-    ) %>%
+      #Account for multiple date time formats from Omni .csv data
+      time = parse_date_time(time_raw, orders = c("ymd HMS", "ymd HM",
+                                                  "mdy HMS", "mdy HM",
+                                                  "dmy HMS", "dmy HM"),
+        tz = "America/Denver")) %>%
     relocate(device_id, time) %>%
     select(-time_raw, -`timestamp(America/Denver)`)
   
   return(df)
+  
 }
 
-# Omni data files location
+#Omni .csv data files location
 omni_dir <- "data/omni_data"
 
-# List of all Omni .csv
-omni_files <- list.files(path = omni_dir, pattern = "\\.csv$", full.names = TRUE)
+#List of all Omni .csv
+omni_files <- list.files(path = omni_dir, pattern = "\\.csv$",
+                         full.names = TRUE)
 
-# Apply the function to all Omni files and create master dataframe
+#Apply the function to all Omni .csv files and create new df
 omni_master <- map_dfr(omni_files, read_and_clean_omni)
 
 
