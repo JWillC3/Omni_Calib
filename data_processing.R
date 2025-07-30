@@ -50,18 +50,19 @@ omni_batch_1 <- omni_master %>%
  
  
 #----
+#Function to trim Omni data to match chamber batches and step times
  trim_omni <- function(omni_data, sheet_data, batch_number) {
    
-   # Step 1: Get device IDs for this batch
+   #Step 1: Get device IDs for the batches
    batch_ids <- sheet_data %>%
      filter(batch == as.character(batch_number)) %>%
      pull(Device_ID)
    
-   # Step 2: Filter Omni data for those devices
+   #Step 2: Filter Omni data
    batch_omni <- omni_data %>%
      filter(device_id %in% batch_ids)
    
-   # Step 3: Get step time windows for this batch
+   #Step 3: Get step time windows
    step_windows <- sheet_data %>%
      filter(batch == as.character(batch_number)) %>%
      group_by(Chamber_Step) %>%
@@ -71,7 +72,7 @@ omni_batch_1 <- omni_master %>%
        .groups = "drop"
      )
    
-   # Step 4: Split and trim by step
+   #Step 4: Split and trim by step
    step_data <- step_windows %>%
      group_split(Chamber_Step) %>%
      map(~ {
@@ -85,18 +86,20 @@ omni_batch_1 <- omni_master %>%
          mutate(Chamber_Step = step_val)
      })
    
-   # Step 5: Combine all steps back
+   #Step 5: Combine all steps back
    bind_rows(step_data)
  }
 
 #Create each batch
 batch_1 <- trim_omni(omni_master, sheets_data, batch_number = 1) 
 batch_2 <- trim_omni(omni_master, sheets_data, batch_number = 2)
+batch_3 <- trim_omni(omni_master, sheets_data, batch_number = 3)
 
 #Combine all batches
 all_batches <- unique(sheets_data$batch)
 
 omni_all_trimmed <- map_dfr(all_batches, function(batch_num) {
+  
   trim_omni(omni_master, sheets_data, batch_number = batch_num) %>%
     mutate(batch = batch_num)
 })
