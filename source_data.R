@@ -120,7 +120,7 @@ p_chamber_batch <- function(data, test_end, title_suffix) {
       expand = c(0, 0)
     ) +
     labs(title = paste("PM 2.5 Chamber Test:", title_suffix), x = "Time",
-      y = "Concentration (µg/m³)", color = "Device_ID") +
+      y = "Concentration (µg/m³)", color = "Device ID") +
     theme_minimal(base_size = 14) +
     theme(panel.grid.minor = element_blank(),
           panel.grid.major.x = element_line(color = "gray90"),
