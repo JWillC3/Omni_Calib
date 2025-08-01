@@ -94,6 +94,8 @@ omni_batch_1 <- omni_master %>%
 batch_1 <- trim_omni(omni_master, sheets_data, batch_number = 1) 
 batch_2 <- trim_omni(omni_master, sheets_data, batch_number = 2)
 batch_3 <- trim_omni(omni_master, sheets_data, batch_number = 3)
+batch_4 <- trim_omni(omni_master, sheets_data, batch_number = 4)
+batch_5 <- trim_omni(omni_master, sheets_data, batch_number = 5)
 
 #Combine all batches
 all_batches <- unique(sheets_data$batch)
@@ -104,4 +106,39 @@ omni_all_trimmed <- map_dfr(all_batches, function(batch_num) {
     mutate(batch = batch_num)
 })
 
-unique(omni_all_trimmed$batch)
+#----
+#Batch plots
+
+#odering chamber steps for plotting
+batch_1 <- batch_1 %>% 
+  mutate(Chamber_Step = factor(Chamber_Step, levels = c("150.4", "55.4",
+                                                        "35.4", "12", "0")))
+#Create bands for plot area
+step_bands <- batch_1 %>% 
+  group_by(Chamber_Step) %>% 
+  summarise(xmin = min(time),
+            xmax = max(time),
+            .groups = "drop")
+
+#Define color for bands
+step_colors <- c("150.4" = "#d8bce6", "55.4" = "#f4cccc", "35.4" = "#fce5cd",
+                 "12" = "#fff2cc", "0" = "#d9ead3")
+
+#Plot
+p_batch_1 <- batch_1 %>% 
+  ggplot(aes(x = time, y = pm25, color = device_id)) +
+  geom_rect(data = step_bands, inherit.aes = FALSE,
+            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf,
+                fill = Chamber_Step), alpha = 0.5) +
+  geom_line(linewidth = 0.8) +
+  scale_fill_manual(values = step_colors, guide = "none") +
+  scale_color_brewer(palette = "Dark2") +
+  labs(title = "Chamber Test Pm 2.5 Concentration by Device ID",
+        x = "Time", y = "Concentration (µg/m³)", color = "Device_ID") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_line(color = "gray90"),
+        plot.title = element_text(face = "bold"),
+        legend.position = "right")
+
+p_batch_1
