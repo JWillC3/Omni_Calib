@@ -107,38 +107,31 @@ omni_all_trimmed <- map_dfr(all_batches, function(batch_num) {
 })
 
 #----
-#Batch plots
+#Batch plots function name is: p_chamber_batch
 
-#odering chamber steps for plotting
-batch_1 <- batch_1 %>% 
-  mutate(Chamber_Step = factor(Chamber_Step, levels = c("150.4", "55.4",
-                                                        "35.4", "12", "0")))
-#Create bands for plot area
-step_bands <- batch_1 %>% 
-  group_by(Chamber_Step) %>% 
-  summarise(xmin = min(time),
-            xmax = max(time),
-            .groups = "drop")
-
-#Define color for bands
-step_colors <- c("150.4" = "#d8bce6", "55.4" = "#f4cccc", "35.4" = "#fce5cd",
-                 "12" = "#fff2cc", "0" = "#d9ead3")
-
-#Plot
-p_batch_1 <- batch_1 %>% 
-  ggplot(aes(x = time, y = pm25, color = device_id)) +
-  geom_rect(data = step_bands, inherit.aes = FALSE,
-            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf,
-                fill = Chamber_Step), alpha = 0.5) +
-  geom_line(linewidth = 0.8) +
-  scale_fill_manual(values = step_colors, guide = "none") +
-  scale_color_brewer(palette = "Dark2") +
-  labs(title = "Chamber Test Pm 2.5 Concentration by Device ID",
-        x = "Time", y = "Concentration (µg/m³)", color = "Device_ID") +
-  theme_minimal(base_size = 14) +
-  theme(panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_line(color = "gray90"),
-        plot.title = element_text(face = "bold"),
-        legend.position = "right")
-
+#Define test end time
+test_end <- as.POSIXct("2025-07-14 23:59", tz = "America/Denver")
+#Call the function
+p_batch_1 <- p_chamber_batch(batch_1, test_end, "July 14, 2025")
+#Display plot
 p_batch_1
+
+#Define test end time
+test_end <- as.POSIXct("2025-07-31 23:59", tz = "America/Denver")
+#Call the function
+p_batch_5 <- p_chamber_batch(batch_5, test_end, "July 31, 2025")
+#Display plot
+p_batch_5
+
+#Define test end time
+test_end <- as.POSIXct("2025-07-25 23:59", tz = "America/Denver")
+#Call the function
+p_batch_3 <- p_chamber_batch(batch_3, test_end, "July 25, 2025")
+#Display plot
+p_batch_3
+
+test_end <- as.POSIXct("2025-07-18 23:59", tz = "America/Denver")
+#Call the function
+p_batch_2 <- p_chamber_batch(batch_2, test_end, "July 18, 2025")
+#Display plot
+p_batch_2
