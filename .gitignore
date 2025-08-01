@@ -7,6 +7,7 @@ Omni_Calib.Rproj
 
 # Data files
 data
+plots
 data_raw/
 data_clean/
 ref_data/
