@@ -135,3 +135,10 @@ test_end <- as.POSIXct("2025-07-18 23:59", tz = "America/Denver")
 p_batch_2 <- p_chamber_batch(batch_2, test_end, "July 18, 2025")
 #Display plot
 p_batch_2
+
+test_end <- as.POSIXct("2025-07-30 23:59", tz = "America/Denver")
+#Call the function
+p_batch_4 <- p_chamber_batch(batch_4, test_end, "July 30, 2025")
+#Display plot
+p_batch_4
+
