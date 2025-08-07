@@ -96,6 +96,7 @@ batch_2 <- trim_omni(omni_master, sheets_data, batch_number = 2)
 batch_3 <- trim_omni(omni_master, sheets_data, batch_number = 3)
 batch_4 <- trim_omni(omni_master, sheets_data, batch_number = 4)
 batch_5 <- trim_omni(omni_master, sheets_data, batch_number = 5)
+batch_6 <- trim_omni(omni_master, sheets_data, batch_number = 6)
 
 #Combine all batches
 all_batches <- unique(sheets_data$batch)
@@ -142,3 +143,10 @@ p_batch_4 <- p_chamber_batch(batch_4, test_end, "July 30, 2025")
 #Display plot
 p_batch_4
 
+test_end <- as.POSIXct("2025-08-06 23:59", tz = "America/Denver")
+#Call the function
+p_batch_6 <- p_chamber_batch(batch_6, test_end, "Aug 6, 2025")
+#Display plot
+p_batch_6
+
+ggplotly(p_batch_6)
